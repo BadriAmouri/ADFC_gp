@@ -1,0 +1,30 @@
+{
+    "projects": [
+      {
+        "name": "Project_A",
+        "start": 2,
+        "end": 20,
+        "roles": { "Role_1": 4, "Role_2": 6 }
+      }
+    ],
+    "employees": [
+      {
+        "name": "Alice",
+        "role": "Role_1",
+        "expertise": 90,
+        "availability": [1,1,1,...],
+        "team": "A"
+      },
+      {
+        "name": "Bob",
+        "role": "Role_2",
+        "expertise": 80,
+        "availability": [1,1,1,...],
+        "team": "B"
+      }
+    ],
+    "weeks": 52,
+    "shift_system": "3x3",
+    "method": "csp"
+  }
+  

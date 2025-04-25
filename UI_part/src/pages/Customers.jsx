@@ -34,6 +34,16 @@ export default function ProjectForm() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [prediction, setPrediction] = useState(null);
+  const [scheduleResult, setScheduleResult] = useState(null);
+
+  const runScheduler = async (predictionData) => {
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/solve', predictionData);
+      setScheduleResult(response.data);
+    } catch (error) {
+      console.error('Scheduler Error:', error);
+    }
+  };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,11 +71,21 @@ export default function ProjectForm() {
         start_year: parseInt(formData.start_year),
         start_month: parseInt(formData.start_month),
         end_year: parseInt(formData.end_year),
-        end_month: parseInt(formData.end_month)
+        end_month: parseInt(formData.end_month),
+        
+        // Add the missing fields (projects, employees, weeks) here
+        projects: "example_project_data",  // Replace with actual logic or input
+        employees: "example_employee_data", // Replace with actual logic or input
+        weeks: "example_weeks_data"         // Replace with actual logic or input
       };
 
-      const response = await axios.post('http://localhost:5000/predict', payload);
-      setPrediction(response.data);
+      const response = await axios.post('http://127.0.0.1:5000/predict', payload);
+      const predictionData = response.data;
+
+      setPrediction(predictionData);
+
+      // 🎯 Call the scheduler with prediction data
+      await runScheduler(predictionData);
     } catch (error) {
       console.error('Prediction Error:', error);
     } finally {
@@ -93,13 +113,7 @@ export default function ProjectForm() {
           <InputField label="Volume Estimate" name="volume_estimate" value={formData.volume_estimate} onChange={handleInputChange} type="number" />
           <InputField label="Risk Level (0 to 1)" name="risk_level" value={formData.risk_level} onChange={handleInputChange} type="number" />
           <Dropdown label="Has Automation?" options={yesNo} value={formData.has_automation} onChange={(v) => handleListboxChange("has_automation", v)} />
-                      <Dropdown
-              label="Geological Complexity"
-              options={geologicalComplexities}
-              value={formData.geological_complexity}
-              onChange={(v) => handleListboxChange("geological_complexity", v)}
-            />
-
+          <Dropdown label="Geological Complexity" options={geologicalComplexities} value={formData.geological_complexity} onChange={(v) => handleListboxChange("geological_complexity", v)} />
           <InputField label="Project Budget" name="project_budget" value={formData.project_budget} onChange={handleInputChange} type="number" />
           <Dropdown label="Water Treatment" options={yesNo} value={formData.water_treatment} onChange={(v) => handleListboxChange("water_treatment", v)} />
           <Dropdown label="Shift Type" options={shiftTypes} value={formData.shift_type} onChange={(v) => handleListboxChange("shift_type", v)} />
@@ -111,33 +125,28 @@ export default function ProjectForm() {
             {isLoading ? 'Processing...' : '✨ Generate Prediction'}
           </motion.button>
         </div>
+
         {!isLoading && prediction && (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5 }}
-    className="mt-8 p-6 bg-orange-50 rounded-lg shadow-inner"
-  >
-    <h2 className="text-2xl font-semibold text-orange-700 mb-4">📊 Prediction Results</h2>
-    <ul className="space-y-2 text-gray-800 text-lg">
-      <li><strong>Automation Specialist:</strong> {prediction.automation_specialist}</li>
-      <li><strong>Drilling Engineer:</strong> {prediction.drilling_engineer}</li>
-      <li><strong>Geologist:</strong> {prediction.geologist}</li>
-      <li><strong>Mechanical Engineer:</strong> {prediction.mechanical_engineer}</li>
-      <li><strong>Mud Engineer:</strong> {prediction.mud_engineer}</li>
-      <li><strong>Operations Engineer:</strong> {prediction.operations_engineer}</li>
-      <li><strong>Rig Manager:</strong> {prediction.rig_manager}</li>
-      <li><strong>Water Engineer:</strong> {prediction.water_engineer}</li>
-    </ul>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mt-8 p-6 bg-orange-50 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-semibold text-orange-700 mb-4">📊 Prediction Results</h2>
+            <ul className="space-y-2 text-gray-800 text-lg">
+              <li><strong>Automation Specialist:</strong> {prediction.automation_specialist}</li>
+              <li><strong>Drilling Engineer:</strong> {prediction.drilling_engineer}</li>
+              <li><strong>Geologist:</strong> {prediction.geologist}</li>
+              <li><strong>Mechanical Engineer:</strong> {prediction.mechanical_engineer}</li>
+              <li><strong>Mud Engineer:</strong> {prediction.mud_engineer}</li>
+              <li><strong>Operations Engineer:</strong> {prediction.operations_engineer}</li>
+              <li><strong>Rig Manager:</strong> {prediction.rig_manager}</li>
+              <li><strong>Water Engineer:</strong> {prediction.water_engineer}</li>
+            </ul>
 
-    <hr className="my-4 border-orange-300" />
+            <hr className="my-4 border-orange-300" />
 
-    <p className="text-xl font-bold text-gray-900">
-      👥 <strong>Total Employees:</strong> {prediction.total_employees}
-    </p>
-  </motion.div>
-)}
-
+            <p className="text-xl font-bold text-gray-900">
+              👥 <strong>Total Employees:</strong> {prediction.total_employees}
+            </p>
+          </motion.div>
+        )}
       </motion.form>
     </div>
   );
@@ -149,14 +158,18 @@ function Dropdown({ label, options, value, onChange }) {
       <Listbox value={value} onChange={onChange}>
         <div className="relative">
           <Listbox.Label className="block mb-2 text-sm font-medium text-gray-700">{label}</Listbox.Label>
-          <Listbox.Button className="w-full py-3 px-4 border border-gray-300 rounded-lg bg-white shadow-sm text-left focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 relative">
-            <span>{value || `Select ${label}`}</span>
-            <ChevronUpDownIcon className="w-5 h-5 absolute right-3 top-3 text-orange-500" />
+          <Listbox.Button className="relative w-full py-2 pl-4 pr-10 text-left bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
+            {value || 'Select an option'}
+            <ChevronUpDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           </Listbox.Button>
-          <Listbox.Options className="absolute z-10 mt-2 w-full bg-white shadow-md rounded-lg max-h-60 overflow-auto focus:outline-none">
-            {options.map((opt) => (
-              <Listbox.Option key={opt} value={opt} className={({ active }) => `cursor-pointer select-none relative py-3 pl-4 pr-10 ${active ? 'bg-orange-100 text-orange-600' : 'text-gray-900'}`}>
-                {opt}
+          <Listbox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto bg-white border border-gray-300 rounded-md shadow-lg max-h-60 focus:outline-none">
+            {options.map((option, idx) => (
+              <Listbox.Option key={idx} value={option}>
+                {({ active, selected }) => (
+                  <span className={`block px-4 py-2 text-lg ${selected ? 'bg-orange-100 text-orange-900' : active ? 'bg-orange-50' : 'text-gray-900'}`}>
+                    {option}
+                  </span>
+                )}
               </Listbox.Option>
             ))}
           </Listbox.Options>
@@ -166,16 +179,17 @@ function Dropdown({ label, options, value, onChange }) {
   );
 }
 
-function InputField({ label, name, type, value, onChange }) {
+function InputField({ label, value, onChange, type, name }) {
   return (
     <div>
-      <label className="block mb-2 text-sm font-medium text-gray-700">{label}</label>
+      <label htmlFor={name} className="block text-sm font-medium text-gray-700">{label}</label>
       <input
-        type={type}
+        id={name}
         name={name}
+        type={type}
         value={value}
         onChange={onChange}
-        className="w-full py-3 px-4 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
+        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
       />
     </div>
   );

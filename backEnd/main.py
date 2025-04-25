@@ -3,10 +3,13 @@ from flask_cors import CORS
 import joblib
 import pandas as pd
 
-app = Flask(__name__)
-CORS(app)  # So the frontend can access the backend
+from scheduler.project_scheduler import ProjectScheduler
 
-# Load the trained model
+app = Flask(__name__)
+CORS(app)
+
+# Initialize components
+scheduler = ProjectScheduler()
 model = joblib.load("predictionModel.pkl")
 
 # Define the order of features (same as X.columns in training)
@@ -39,5 +42,25 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@app.route('/solve', methods=['POST'])
+def solve_schedule():
+    data = request.get_json()
+
+    projects = data.get('projects')
+    employees = data.get('employees')
+    weeks = data.get('weeks')
+    shift_system = data.get('shift_system', '3x3')
+
+    if not projects or not employees or weeks is None:
+        return jsonify({'error': 'Missing required fields: projects, employees, weeks'}), 400
+
+    status, assignments, exec_time = scheduler.solve_csp(projects, employees, weeks, shift_system)
+
+    return jsonify({
+        'status': status,
+        'execution_time': exec_time,
+        'assignments': assignments
+    })
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=5000, debug=True)
