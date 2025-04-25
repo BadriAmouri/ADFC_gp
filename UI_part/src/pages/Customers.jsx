@@ -1,220 +1,232 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  Select,
-  TextField,
-  Typography,
-  Slider,
-  Switch,
-} from "@mui/material";
+'use client';
 
-const ProjectForm = () => {
+import { useState } from 'react';
+import { Listbox } from '@headlessui/react';
+import { motion } from 'framer-motion';
+import { ChevronUpDownIcon } from '@heroicons/react/24/solid';
+
+const projectTypes = ["exploration", "development", "production"];
+const shiftTypes = ["4x4", "4x6"];
+const riskLevels = ["low", "medium", "high"];
+const yesNo = ["yes", "no"];
+const specialitiesOptions = ["drilling", "completion", "production", "computer science", "civil", "electrical", "mechanical", "other"];
+
+export default function ProjectForm() {
   const [formData, setFormData] = useState({
     projectType: "",
-    shift: "4x4",
-    duration: "",
+    shiftType: "",
     startDate: "",
     endDate: "",
-    depth: "",
-    geologicalComplexity: "",
-    volumeEstimate: "",
-    riskLevel: 0.5,
-    hasAutomation: false,
-    projectBudget: "",
-    waterTreatment: false,
+    budget: "",
+    geoComplexity: "",
+    riskLevel: "",
+    hasAutomation: "",
+    waterTreatment: "",
+    specialities: [],
   });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSliderChange = (_, newValue) => {
-    setFormData((prev) => ({
+  const handleListboxChange = (name: string, value: string) => {
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSpecialitiesChange = (value: string) => {
+    setFormData(prev => ({
       ...prev,
-      riskLevel: newValue,
+      specialities: prev.specialities.includes(value)
+        ? prev.specialities.filter(v => v !== value)
+        : [...prev.specialities, value],
     }));
   };
 
   return (
-    <Box   className="font-futura" 
-    sx={{ maxWidth: 'full', mx: "auto", p: 3, mt: 10, bgcolor: "#000000", borderRadius: 2 }}>
-      <Typography variant="h4" sx={{ fontFamily: 'Futura' }}  fontWeight="bold" mb={2} color="white">Create Project</Typography>
+    <div className="max-w-6xl mx-auto p-8 mt-10 bg-white rounded-2xl shadow-lg">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
+        className="text-left mb-8"
+      >
+        <h1 className="text-4xl font-bold text-orange-600 mb-2">
+          Project Details
+        </h1>
+        <p className="text-gray-500 text-lg">
+          Provide necessary information to generate a staffing prediction
+        </p>
+      </motion.div>
 
-      {/* Project Type */}
-      <FormControl fullWidth margin="normal">
-        <InputLabel style={{ color: 'white' }}>Project Type</InputLabel>
-        <Select
-          name="projectType"
-          value={formData.projectType}
-          onChange={handleChange}
-          sx={{ color: 'white', '.MuiSvgIcon-root': { color: 'white' } }}
-        >
-          <MenuItem value="Exploration">Exploration</MenuItem>
-          <MenuItem value="Exploitation">Exploitation</MenuItem>
-          <MenuItem value="Development">Development</MenuItem>
-          <MenuItem value="Workover">Workover</MenuItem>
-          <MenuItem value="Appraisal">Appraisal</MenuItem>
-        </Select>
-      </FormControl>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.7 }}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-      {/* Shifts */}
-      <FormControl fullWidth margin="normal">
-        <InputLabel style={{ color: 'white' }}>Shift</InputLabel>
-        <Select
-          name="shift"
-          value={formData.shift}
-          onChange={handleChange}
-          sx={{ color: 'white', '.MuiSvgIcon-root': { color: 'white' } }}
-        >
-          <MenuItem value="4x4">4x4</MenuItem>
-          <MenuItem value="3x6">3x6</MenuItem>
-        </Select>
-      </FormControl>
+          {/* Project Type */}
+          <Dropdown
+            label="Project Type"
+            options={projectTypes}
+            value={formData.projectType}
+            onChange={(value) => handleListboxChange("projectType", value)}
+          />
 
-      {/* Duration */}
-      <TextField
-        fullWidth
-        label="Duration (days)"
-        name="duration"
-        type="number"
-        value={formData.duration}
-        onChange={handleChange}
-        margin="normal"
-        InputLabelProps={{ style: { color: 'white' } }}
-        InputProps={{ style: { color: 'white' } }}
-      />
+          {/* Shift Type */}
+          <Dropdown
+            label="Shift Type"
+            options={shiftTypes}
+            value={formData.shiftType}
+            onChange={(value) => handleListboxChange("shiftType", value)}
+          />
 
-      {/* Start and End Date */}
-      <Box display="flex" gap={2}>
-        <TextField
-          fullWidth
-          label="Start Date (YYYY-MM)"
-          name="startDate"
-          type="month"
-          value={formData.startDate}
-          onChange={handleChange}
-          margin="normal"
-          InputLabelProps={{ style: { color: 'white' } }}
-          InputProps={{ style: { color: 'white' } }}
-        />
-        <TextField
-          fullWidth
-          label="End Date (YYYY-MM)"
-          name="endDate"
-          type="month"
-          value={formData.endDate}
-          onChange={handleChange}
-          margin="normal"
-          InputLabelProps={{ style: { color: 'white' } }}
-          InputProps={{ style: { color: 'white' } }}
-        />
-      </Box>
+          {/* Budget */}
+          <InputField
+            label="Budget ($)"
+            name="budget"
+            type="number"
+            value={formData.budget}
+            onChange={handleInputChange}
+          />
 
-      {/* Depth */}
-      <TextField
-        fullWidth
-        label="Depth (m)"
-        name="depth"
-        type="number"
-        value={formData.depth}
-        onChange={handleChange}
-        margin="normal"
-        InputLabelProps={{ style: { color: 'white' } }}
-        InputProps={{ style: { color: 'white' } }}
-      />
+          {/* Project Timeline (Start & End Dates) */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <InputField
+              label="Start Date"
+              name="startDate"
+              type="date"
+              value={formData.startDate}
+              onChange={handleInputChange}
+            />
+            <InputField
+              label="End Date"
+              name="endDate"
+              type="date"
+              value={formData.endDate}
+              onChange={handleInputChange}
+            />
+          </div>
 
-      {/* Geological Complexity */}
-      <FormControl fullWidth margin="normal">
-        <InputLabel style={{ color: 'white' }}>Geological Complexity</InputLabel>
-        <Select
-          name="geologicalComplexity"
-          value={formData.geologicalComplexity}
-          onChange={handleChange}
-          sx={{ color: 'white', '.MuiSvgIcon-root': { color: 'white' } }}
-        >
-          <MenuItem value="Low">Low</MenuItem>
-          <MenuItem value="Medium">Medium</MenuItem>
-          <MenuItem value="High">High</MenuItem>
-        </Select>
-      </FormControl>
+          {/* Geo Complexity */}
+          <InputField
+            label="Geological Complexity"
+            name="geoComplexity"
+            type="text"
+            value={formData.geoComplexity}
+            onChange={handleInputChange}
+          />
 
-      {/* Volume Estimate */}
-      <TextField
-        fullWidth
-        label="Volume Estimate"
-        name="volumeEstimate"
-        type="number"
-        value={formData.volumeEstimate}
-        onChange={handleChange}
-        margin="normal"
-        InputLabelProps={{ style: { color: 'white' } }}
-        InputProps={{ style: { color: 'white' } }}
-      />
+          {/* Risk Level */}
+          <Dropdown
+            label="Risk Level"
+            options={riskLevels}
+            value={formData.riskLevel}
+            onChange={(value) => handleListboxChange("riskLevel", value)}
+          />
 
-      {/* Risk Level */}
-      <Box mt={3}>
-        <Typography sx={{ fontFamily: 'Futura' }} color="white" gutterBottom>Risk Level: {formData.riskLevel}</Typography>
-        <Slider
-          value={formData.riskLevel}
-          min={0}
-          max={1}
-          step={0.01}
-          onChange={handleSliderChange}
-          sx={{ color: '#fbc02d' }}
-        />
-      </Box>
+          {/* Has Automation */}
+          <Dropdown
+            label="Automation Available?"
+            options={yesNo}
+            value={formData.hasAutomation}
+            onChange={(value) => handleListboxChange("hasAutomation", value)}
+          />
 
-      {/* Automation */}
-      <Box mt={2} display="flex" alignItems="center" gap={2}>
-        <Typography sx={{ fontFamily: 'Futura' }} color="white">Has Automation</Typography>
-        <Switch
-          name="hasAutomation"
-          checked={formData.hasAutomation}
-          onChange={handleChange}
-          color="warning"
-        />
-      </Box>
+          {/* Water Treatment */}
+          <Dropdown
+            label="Water Treatment"
+            options={yesNo}
+            value={formData.waterTreatment}
+            onChange={(value) => handleListboxChange("waterTreatment", value)}
+          />
 
-      {/* Budget */}
-      <TextField
-        fullWidth
-        label="Project Budget ($)"
-        name="projectBudget"
-        type="number"
-        value={formData.projectBudget}
-        onChange={handleChange}
-        margin="normal"
-        InputLabelProps={{ style: { color: 'white' } }}
-        InputProps={{ style: { color: 'white' } }}
-      />
+          {/* Specialities */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-3">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Specialities
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {specialitiesOptions.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => handleSpecialitiesChange(option)}
+                  className={`px-4 py-2 rounded-full border ${
+                    formData.specialities.includes(option)
+                      ? "bg-orange-600 text-white border-orange-500"
+                      : "border-gray-300 text-gray-600 hover:bg-orange-100"
+                  } transition-all duration-200 text-sm`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
 
-      {/* Water Treatment */}
-      <Box mt={2} display="flex" alignItems="center" gap={2}>
-        <Typography color="white" sx={{ fontFamily: 'Futura' }}>Water Treatment</Typography>
-        <Switch
-          name="waterTreatment"
-          checked={formData.waterTreatment}
-          onChange={handleChange}
-          color="warning"
-        />
-      </Box>
+        </div>
 
-      <Button fullWidth variant="contained" color="warning" sx={{ fontFamily: 'Futura' ,mt: 4}}  >
-        Create Project
-      </Button>
-    </Box>
+        {/* Submit Button */}
+        <div className="text-center mt-12">
+          <motion.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-gradient-to-r from-orange-400 to-orange-600 text-white font-bold py-4 px-10 rounded-full shadow-md hover:shadow-lg transition text-xl"
+          >
+            ✨ Generate Prediction
+          </motion.button>
+        </div>
+      </motion.div>
+    </div>
   );
-};
+}
 
-export default ProjectForm;
+function Dropdown({ label, options, value, onChange }: { label: string, options: string[], value: string, onChange: (value: string) => void }) {
+  return (
+    <div>
+      <Listbox value={value} onChange={onChange}>
+        <div className="relative">
+          <Listbox.Label className="block mb-2 text-sm font-medium text-gray-700">
+            {label}
+          </Listbox.Label>
+          <Listbox.Button className="w-full py-3 px-4 border border-gray-300 rounded-lg bg-white shadow-sm text-left focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 relative">
+            <span>{value || `Select ${label}`}</span>
+            <ChevronUpDownIcon className="w-5 h-5 absolute right-3 top-3 text-orange-500" />
+          </Listbox.Button>
+          <Listbox.Options className="absolute z-10 mt-2 w-full bg-white shadow-md rounded-lg max-h-60 overflow-auto focus:outline-none">
+            {options.map((opt) => (
+              <Listbox.Option
+                key={opt}
+                value={opt}
+                className={({ active }) =>
+                  `cursor-pointer select-none relative py-3 pl-4 pr-10 ${
+                    active ? 'bg-orange-100 text-orange-600' : 'text-gray-900'
+                  }`
+                }
+              >
+                {opt}
+              </Listbox.Option>
+            ))}
+          </Listbox.Options>
+        </div>
+      </Listbox>
+    </div>
+  );
+}
+
+function InputField({ label, name, type, value, onChange }: { label: string, name: string, type: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+  return (
+    <div>
+      <label className="block mb-2 text-sm font-medium text-gray-700">
+        {label}
+      </label>
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        className="w-full py-3 px-4 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
+      />
+    </div>
+  );
+}
