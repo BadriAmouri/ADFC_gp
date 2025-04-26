@@ -1,16 +1,19 @@
 'use client';
 import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { HiArrowLeft } from 'react-icons/hi';
   
 function AuthForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = e => {
     e.preventDefault();
     alert(`${isSignUp ? 'Signing up' : 'Signing in'} with:\nEmail: ${email}\nPassword: ${password}`);
+    navigate('/dashboard'); // Redirect to home after submission
   };
 
   return (

@@ -4,6 +4,8 @@ import joblib
 import pandas as pd
 
 from scheduler.project_scheduler import ProjectScheduler
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
 app = Flask(__name__)
 CORS(app)
@@ -63,4 +65,4 @@ def solve_schedule():
     })
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=True)

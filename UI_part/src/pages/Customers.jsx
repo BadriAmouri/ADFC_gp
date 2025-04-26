@@ -12,6 +12,61 @@ const riskLevels = ["Low", "Medium", "High"];
 const yesNo = ["Yes", "No"];
 const geologicalComplexities = ["Low", "Medium", "High"];
 
+ const employees = [
+  {
+    "name": "Alice",
+    "role": "developer",
+    "expertise": 5,
+    "availability": [1, 1, 1, 1, 1, 1]
+  },
+  {
+    "name": "Bob",
+    "role": "developer",
+    "expertise": 3,
+    "availability": [1, 1, 1, 1, 1, 1]
+  },
+  {
+    "name": "Charlie",
+    "role": "designer",
+    "expertise": 4,
+    "availability": [1, 0, 1, 1, 1, 0]
+  },
+  {
+    "name": "Diana",
+    "role": "project_manager",
+    "expertise": 5,
+    "availability": [1, 1, 1, 1, 0, 0]
+  },
+  {
+    "name": "Eve",
+    "role": "developer",
+    "expertise": 2,
+    "availability": [1, 1, 0, 1, 0, 1]
+  }
+]
+
+
+
+const generateEmployees = (predictionData) => {
+  const roles = Object.keys(predictionData).filter(role => role !== 'total_employees');
+  const employees = [];
+
+  roles.forEach(role => {
+    const count = predictionData[role];
+    for (let i = 0; i < count; i++) {
+      employees.push({
+        name: `${role}_Employee_${i+1}`,
+        role: role,
+        expertise: Math.floor(Math.random() * 5) + 1, // Random expertise between 1 and 5
+        availability: Array(11).fill(1) // Available every week (adjust number of weeks)
+      });
+    }
+  });
+
+  return employees;
+};
+
+
 export default function ProjectForm() {
   const [formData, setFormData] = useState({
     project_type: "",
@@ -38,7 +93,7 @@ export default function ProjectForm() {
 
   const runScheduler = async (predictionData) => {
     try {
-      const response = await axios.post('http://127.0.0.1:5000/solve', predictionData);
+      const response = await axios.post('http://127.0.0.1:5001/solve', predictionData);
       setScheduleResult(response.data);
     } catch (error) {
       console.error('Scheduler Error:', error);
@@ -79,13 +134,38 @@ export default function ProjectForm() {
         weeks: "example_weeks_data"         // Replace with actual logic or input
       };
 
-      const response = await axios.post('http://127.0.0.1:5000/predict', payload);
+      const response = await axios.post('http://127.0.0.1:5001/predict', payload);
       const predictionData = response.data;
 
       setPrediction(predictionData);
+      console.log('Prediction Data:', predictionData);
 
-      // 🎯 Call the scheduler with prediction data
-      await runScheduler(predictionData);
+      // 🎯 Prepare the correct input for the scheduler
+const schedulerInput = {
+  projects: [
+    {
+      name: "Oil Rig Operation",
+      start: 0,
+      end: 10,  // Example: project duration
+      roles: {
+        automation_specialist: predictionData.automation_specialist,
+        drilling_engineer: predictionData.drilling_engineer,
+        geologist: predictionData.geologist,
+        mechanical_engineer: predictionData.mechanical_engineer,
+        mud_engineer: predictionData.mud_engineer,
+        operations_engineer: predictionData.operations_engineer,
+        rig_manager: predictionData.rig_manager,
+        water_engineer: predictionData.water_engineer
+      }
+    }
+  ],
+  employees: generateEmployees(predictionData),
+  weeks: 10,    // Example: match project weeks
+  shift_system: "3x3" // or whatever system you use
+};
+
+// Now run the scheduler with correct input
+await runScheduler(schedulerInput);
     } catch (error) {
       console.error('Prediction Error:', error);
     } finally {

@@ -1,0 +1,78 @@
+POST http://127.0.0.1:5001/solve
+Content-Type: application/json
+
+{
+  "projects": [
+    {
+      "name": "Project_1",
+      "start": 0,
+      "end": 10,
+      "roles": {
+        "drilling_engineer": 2,
+        "geologist": 1,
+        "mechanical_engineer": 1,
+        "mud_engineer": 1
+      }
+    }
+  ],
+  "employees": [
+    {
+      "name": "Employee_1",
+      "role": "drilling_engineer",
+      "availability": [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      "expertise": 100,
+      "team": "A"
+    }
+  ],
+  "weeks": 52,
+  "shift_system": "3x3"
+}
+
+
+
+### Test solve with small team
+POST http://127.0.0.1:5001/solve
+Content-Type: application/json
+
+{
+  "Engineer": 5,
+  "Specialist": 2,
+  "Care Worker": 8,
+  "Others": 3,
+  "Admin": 1
+}
+
+
+
+### Final Test
+POST http://localhost:5001/solve
+Content-Type: application/json
+
+{
+  "projects": [
+    {
+      "name": "Project Alpha",
+      "start": 0,
+      "end": 5,
+      "roles": {
+        "developer": 2
+      }
+    }
+  ],
+  "employees": [
+    {
+      "name": "Alice",
+      "role": "developer",
+      "expertise": 5,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Bob",
+      "role": "developer",
+      "expertise": 3,
+      "availability": [1,1,1,1,1,1]
+    }
+  ],
+  "weeks": 6,
+  "shift_system": "3x3"
+}
