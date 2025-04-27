@@ -38,6 +38,18 @@ const ProjectDetails = () => {
         <TeamTable />
 
         <SectionTitle title="Check Project Calendar" extraClass="mt-10" />
+        <div className="flex flex-col gap-2 p-4">
+  <div className="flex items-center gap-2">
+    <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+    <span className="text-gray-800 font-medium">Team 01</span>
+  </div>
+
+  <div className="flex items-center gap-2">
+    <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+    <span className="text-gray-800 font-medium">Team 02</span>
+  </div>
+</div>
+
         <Calender />
       </div>
     </section>

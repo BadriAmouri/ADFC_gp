@@ -58,6 +58,9 @@ def solve_schedule():
 
     status, assignments, exec_time = scheduler.solve_csp(projects, employees, weeks, shift_system)
 
+    # Call the visualizer function and pass the assignments
+    scheduler.visualize_schedule(assignments)
+
     return jsonify({
         'status': status,
         'execution_time': exec_time,

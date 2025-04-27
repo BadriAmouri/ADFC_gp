@@ -7,7 +7,7 @@ import { ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 
 const projectTypes = ["Exploration", "Development", "Production"];
-const shiftTypes = ["4x4", "4x6"];
+const shiftTypes = ["4x4", "3x6"];
 const riskLevels = ["Low", "Medium", "High"];
 const yesNo = ["Yes", "No"];
 const geologicalComplexities = ["Low", "Medium", "High"];

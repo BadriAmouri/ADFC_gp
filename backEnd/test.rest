@@ -42,6 +42,9 @@ Content-Type: application/json
   "Admin": 1
 }
 
+### Start : week number 1-48
+
+### Availability : 1-12
 
 
 ### Final Test
@@ -53,7 +56,7 @@ Content-Type: application/json
     {
       "name": "Project Alpha",
       "start": 0,
-      "end": 5,
+      "end": 3,
       "roles": {
         "developer": 2
       }
@@ -71,8 +74,261 @@ Content-Type: application/json
       "role": "developer",
       "expertise": 3,
       "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Alice1",
+      "role": "developer",
+      "expertise": 5,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Bob1",
+      "role": "developer",
+      "expertise": 3,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Alice2",
+      "role": "developer",
+      "expertise": 5,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Bob2",
+      "role": "developer",
+      "expertise": 3,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Alice3",
+      "role": "developer",
+      "expertise": 5,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Bob3",
+      "role": "developer",
+      "expertise": 3,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Alice4",
+      "role": "developer",
+      "expertise": 5,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Bob4",
+      "role": "developer",
+      "expertise": 3,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Alice5",
+      "role": "developer",
+      "expertise": 5,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Bob5",
+      "role": "developer",
+      "expertise": 3,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Alice6",
+      "role": "developer",
+      "expertise": 5,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Bob6",
+      "role": "developer",
+      "expertise": 3,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Alice7",
+      "role": "developer",
+      "expertise": 5,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Bob7",
+      "role": "developer",
+      "expertise": 3,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Alice8",
+      "role": "developer",
+      "expertise": 5,
+      "availability": [1,1,1,1,1,1]
+    },
+    {
+      "name": "Bob8",
+      "role": "developer",
+      "expertise": 3,
+      "availability": [1,1,1,1,1,1]
     }
   ],
-  "weeks": 6,
-  "shift_system": "3x3"
+  "weeks": 48,
+  "shift_system": "4x4"
+}
+
+
+### Final Test 2
+POST http://localhost:5001/solve
+Content-Type: application/json
+
+{
+  "projects": [
+    {
+      "name": "Project A",
+      "roles": {
+        "Engineer": 3,
+        "Manager": 1
+      },
+      "start": 0,
+      "end": 4
+    },
+    {
+      "name": "Project B",
+      "roles": {
+        "Technician": 2
+      },
+      "start": 2,
+      "end": 6
+    }
+  ],
+  "employees": [
+    {
+      "name": "John Doe",
+      "role": "Engineer",
+      "availability": [1, 1, 1, 1, 1, 0, 0],
+      "expertise": 10
+    },
+    {
+      "name": "Jane Smith",
+      "role": "Manager",
+      "availability": [1, 1, 0, 0, 1, 1, 0],
+      "expertise": 8
+    },
+    {
+      "name": "Mark Johnson",
+      "role": "Technician",
+      "availability": [1, 0, 1, 1, 0, 1, 1],
+      "expertise": 6
+    }
+  ],
+  "weeks": 7,
+  "shift_system": "4x4"
+}
+
+
+### Final Test 3
+POST http://localhost:5001/solve
+Content-Type: application/json
+
+{
+  "projects": [
+    {
+      "name": "Project A",
+      "roles": {
+        "Engineer": 3,
+        "Manager": 1,
+        "Technician": 2
+      },
+      "start": 0,
+      "end": 15
+    }
+  ],
+  "employees": [
+    {
+      "name": "John Doe",
+      "role": "Engineer",
+      "availability": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "expertise": 10
+    },
+    {
+      "name": "Jane Smith",
+      "role": "Manager",
+      "availability": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "expertise": 8
+    },
+    {
+      "name": "Mark Johnson",
+      "role": "Technician",
+      "availability": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "expertise": 6
+    },
+    {
+      "name": "Alice Brown",
+      "role": "Engineer",
+      "availability": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "expertise": 9
+    },
+    {
+      "name": "Bob Green",
+      "role": "Engineer",
+      "availability": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "expertise": 7
+    },
+    {
+      "name": "Sara White",
+      "role": "Technician",
+      "availability": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "expertise": 5
+    },
+    {
+      "name": "Tom Black",
+      "role": "Technician",
+      "availability": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "expertise": 4
+    },
+    {
+      "name": "Emily Davis",
+      "role": "Engineer",
+      "availability": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "expertise": 6
+    },
+    {
+      "name": "Carlos Martinez",
+      "role": "Manager",
+      "availability": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "expertise": 7
+    },
+    {
+      "name": "Sophie Wilson",
+      "role": "Engineer",
+      "availability": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "expertise": 8
+    },
+    {
+      "name": "David Harris",
+      "role": "Technician",
+      "availability": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "expertise": 6
+    },
+    {
+      "name": "Olivia Taylor",
+      "role": "Manager",
+      "availability": [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0],
+      "expertise": 9
+    },
+    {
+      "name": "Luke Scott",
+      "role": "Engineer",
+      "availability": [0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0],
+      "expertise": 6
+    },
+    {
+      "name": "Laura Lee",
+      "role": "Technician",
+      "availability": [1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1],
+      "expertise": 5
+    }
+  ],
+  "weeks": 16,
+  "shift_system": "4x4"
 }
