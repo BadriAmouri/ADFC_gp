@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState , useEffect } from 'react';
 import { Listbox } from '@headlessui/react';
 import { motion } from 'framer-motion';
 import { ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const projectTypes = ["Exploration", "Development", "Production"];
 const shiftTypes = ["4x4", "3x6"];
@@ -12,38 +13,6 @@ const riskLevels = ["Low", "Medium", "High"];
 const yesNo = ["Yes", "No"];
 const geologicalComplexities = ["Low", "Medium", "High"];
 
- const employees = [
-  {
-    "name": "Alice",
-    "role": "developer",
-    "expertise": 5,
-    "availability": [1, 1, 1, 1, 1, 1]
-  },
-  {
-    "name": "Bob",
-    "role": "developer",
-    "expertise": 3,
-    "availability": [1, 1, 1, 1, 1, 1]
-  },
-  {
-    "name": "Charlie",
-    "role": "designer",
-    "expertise": 4,
-    "availability": [1, 0, 1, 1, 1, 0]
-  },
-  {
-    "name": "Diana",
-    "role": "project_manager",
-    "expertise": 5,
-    "availability": [1, 1, 1, 1, 0, 0]
-  },
-  {
-    "name": "Eve",
-    "role": "developer",
-    "expertise": 2,
-    "availability": [1, 1, 0, 1, 0, 1]
-  }
-]
 
 
 
@@ -57,14 +26,15 @@ const generateEmployees = (predictionData) => {
       employees.push({
         name: `${role}_Employee_${i+1}`,
         role: role,
-        expertise: Math.floor(Math.random() * 5) + 1, // Random expertise between 1 and 5
-        availability: Array(11).fill(1) // Available every week (adjust number of weeks)
+        expertise: Math.floor(Math.random() * 5) + 1,
+        availability: Array(20).fill(1)   // Make availability match weeks
       });
     }
   });
 
-  return employees;
+  return employees; // 🔥 ADD THIS
 };
+
 
 
 export default function ProjectForm() {
@@ -75,7 +45,7 @@ export default function ProjectForm() {
     start_month: "",
     end_year: "",
     end_month: "",
-    duration_years: "",
+    duration_years: "", // update it to be  end_year - start_year
     depth: "",
     geological_complexity: "Medium",
     volume_estimate: "",
@@ -84,17 +54,20 @@ export default function ProjectForm() {
     project_budget: "",
     water_treatment: "",
     shift_type: "",
-    project_duration: ""
+    project_duration: ""  // update it to be ( end year - start year )*12+(end month-start month)
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const [prediction, setPrediction] = useState(null);
   const [scheduleResult, setScheduleResult] = useState(null);
+  const navigate = useNavigate();
+
 
   const runScheduler = async (predictionData) => {
     try {
       const response = await axios.post('http://127.0.0.1:5001/solve', predictionData);
       setScheduleResult(response.data);
+      console.log('Scheduler Result:', response.data);
     } catch (error) {
       console.error('Scheduler Error:', error);
     }
@@ -121,8 +94,8 @@ export default function ProjectForm() {
         depth: parseFloat(formData.depth),
         volume_estimate: parseFloat(formData.volume_estimate),
         project_budget: parseFloat(formData.project_budget),
-        duration_years: parseInt(formData.duration_years),
-        project_duration: parseInt(formData.project_duration),
+        duration_years: parseInt(formData.end_year) - parseInt(formData.start_year),  // This calculates duration in years
+        project_duration: (parseInt(formData.end_year) - parseInt(formData.start_year)) * 12 + (parseInt(formData.end_month) - parseInt(formData.start_month)),  // This calculates duration in months
         start_year: parseInt(formData.start_year),
         start_month: parseInt(formData.start_month),
         end_year: parseInt(formData.end_year),
@@ -133,37 +106,52 @@ export default function ProjectForm() {
         employees: "example_employee_data", // Replace with actual logic or input
         weeks: "example_weeks_data"         // Replace with actual logic or input
       };
-
+      console.log("the payload", payload);
       const response = await axios.post('http://127.0.0.1:5001/predict', payload);
       const predictionData = response.data;
 
       setPrediction(predictionData);
       console.log('Prediction Data:', predictionData);
 
-      // 🎯 Prepare the correct input for the scheduler
-const schedulerInput = {
-  projects: [
-    {
-      name: "Oil Rig Operation",
-      start: 0,
-      end: 10,  // Example: project duration
-      roles: {
-        automation_specialist: predictionData.automation_specialist,
-        drilling_engineer: predictionData.drilling_engineer,
-        geologist: predictionData.geologist,
-        mechanical_engineer: predictionData.mechanical_engineer,
-        mud_engineer: predictionData.mud_engineer,
-        operations_engineer: predictionData.operations_engineer,
-        rig_manager: predictionData.rig_manager,
-        water_engineer: predictionData.water_engineer
-      }
-    }
-  ],
-  employees: generateEmployees(predictionData),
-  weeks: 10,    // Example: match project weeks
-  shift_system: "3x3" // or whatever system you use
+
+      // Static test data
+const predictionData2 = {
+  automation_specialist: 2,
+  drilling_engineer: 1,
+  geologist: 3,
+  mechanical_engineer: 4,
+  mud_engineer: 2,
+  operations_engineer: 5,
+  rig_manager: 1,
+  water_engineer: 2
 };
 
+      // 🎯 Prepare the correct input for the scheduler
+      const schedulerInput = {
+        projects: [
+          {
+            name: "Oil Rig Operation",
+            start: 0,
+            end: 15,  // Based on the provided test data (15 months, so 15 weeks)
+            roles: {
+              automation_specialist: 0,
+              drilling_engineer: 10,
+              geologist: 2,
+              mechanical_engineer: 5,
+              mud_engineer: 4,
+              operations_engineer: 9,
+              rig_manager: 2,
+              water_engineer: 1
+            }
+          }
+        ],
+        employees: generateEmployees(predictionData),  // Use the function to generate employees
+        weeks: 16,  // Based on project duration in weeks
+        shift_system: "4x4"  // Shift system from test data
+      };
+      
+
+console.log('Scheduler Input:', schedulerInput);
 // Now run the scheduler with correct input
 await runScheduler(schedulerInput);
     } catch (error) {
@@ -171,12 +159,17 @@ await runScheduler(schedulerInput);
     } finally {
       setIsLoading(false);
     }
+
+    //setTimeout(() => {
+     // navigate('/settings'); // Replace with your actual route
+   // }, 10000);
   };
+
 
   return (
     <div className="max-w-6xl mx-auto p-8 mt-10 bg-white rounded-2xl shadow-lg">
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }} className="text-left mb-8">
-        <h1 className="text-4xl font-bold text-orange-600 mb-2">Project Details</h1>
+        <h1 className="text-4xl font-bold text-orange-600 mb-2">Project Details {formData.project_duration}</h1>
         <p className="text-gray-500 text-lg">Provide necessary information to generate a staffing prediction</p>
       </motion.div>
 
@@ -188,7 +181,6 @@ await runScheduler(schedulerInput);
           <InputField label="Start Month" name="start_month" value={formData.start_month} onChange={handleInputChange} type="number" />
           <InputField label="End Year" name="end_year" value={formData.end_year} onChange={handleInputChange} type="number" />
           <InputField label="End Month" name="end_month" value={formData.end_month} onChange={handleInputChange} type="number" />
-          <InputField label="Duration (Years)" name="duration_years" value={formData.duration_years} onChange={handleInputChange} type="number" />
           <InputField label="Depth" name="depth" value={formData.depth} onChange={handleInputChange} type="number" />
           <InputField label="Volume Estimate" name="volume_estimate" value={formData.volume_estimate} onChange={handleInputChange} type="number" />
           <InputField label="Risk Level (0 to 1)" name="risk_level" value={formData.risk_level} onChange={handleInputChange} type="number" />
@@ -197,7 +189,6 @@ await runScheduler(schedulerInput);
           <InputField label="Project Budget" name="project_budget" value={formData.project_budget} onChange={handleInputChange} type="number" />
           <Dropdown label="Water Treatment" options={yesNo} value={formData.water_treatment} onChange={(v) => handleListboxChange("water_treatment", v)} />
           <Dropdown label="Shift Type" options={shiftTypes} value={formData.shift_type} onChange={(v) => handleListboxChange("shift_type", v)} />
-          <InputField label="Project Duration (months)" name="project_duration" value={formData.project_duration} onChange={handleInputChange} type="number" />
         </div>
 
         <div className="text-center mt-12">
@@ -227,6 +218,34 @@ await runScheduler(schedulerInput);
             </p>
           </motion.div>
         )}
+
+{!isLoading && prediction && scheduleResult && Array.isArray(scheduleResult.assignments) && (
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mt-8 p-6 bg-blue-50 rounded-lg shadow-inner">
+    <h2 className="text-2xl font-semibold text-blue-700 mb-4">🗓️ Scheduling Results</h2>
+    <ul className="space-y-2 text-gray-800 text-lg">
+      {scheduleResult.assignments.slice(0, 20).map((assignment, index) => (
+        <li key={index} className="flex justify-between">
+          <span><strong>Employee:</strong> {assignment.employee}</span>
+          <span><strong>Role:</strong> {assignment.role}</span>
+          <span><strong>Project:</strong> {assignment.project}</span>
+          <span><strong>Team:</strong> {assignment.team}</span>
+          <span><strong>Week:</strong> {assignment.week}</span>
+          <span><strong>Expertise:</strong> {assignment.expertise}</span>
+        </li>
+      ))}
+    </ul>
+
+    <hr className="my-4 border-blue-300" />
+
+    <p className="text-lg font-bold text-gray-900">
+      ⏳ <strong>Execution Time:</strong> {scheduleResult.execution_time} seconds
+    </p>
+    <p className="text-lg font-bold text-gray-900">
+      ✅ <strong>Status:</strong> {scheduleResult.status}
+    </p>
+  </motion.div>
+)}
+
       </motion.form>
     </div>
   );
