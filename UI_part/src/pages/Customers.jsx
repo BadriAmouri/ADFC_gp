@@ -61,6 +61,7 @@ export default function ProjectForm() {
   const [prediction, setPrediction] = useState(null);
   const [scheduleResult, setScheduleResult] = useState(null);
   const navigate = useNavigate();
+  const [projects, setProjects] = useState([]);
 
 
   const runScheduler = async (predictionData) => {
@@ -80,11 +81,38 @@ export default function ProjectForm() {
   const handleListboxChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+  
+    try {
+      if (projects.length === 0) {
+        console.warn("No projects to schedule.");
+        return;
+      }
+  
+      const schedulerInput = {
+        projects,
+        employees: generateEmployees(prediction), // use last prediction or get from form
+        weeks: Number((formData.end_month - formData.start_month) * 4),
+        shift_system: formData.shift_type,
+      };
+  
+      console.log("🧠 Scheduler Input:", schedulerInput);
+  
+      await runScheduler(schedulerInput);
+    } catch (error) {
+      console.error("Scheduler Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
 
+
+  const Add_Project = async () => {
+    setIsLoading(true);
+  
     try {
       const payload = {
         ...formData,
@@ -94,76 +122,47 @@ export default function ProjectForm() {
         depth: parseFloat(formData.depth),
         volume_estimate: parseFloat(formData.volume_estimate),
         project_budget: parseFloat(formData.project_budget),
-        duration_years: parseInt(formData.end_year) - parseInt(formData.start_year),  // This calculates duration in years
-        project_duration: (parseInt(formData.end_year) - parseInt(formData.start_year)) * 12 + (parseInt(formData.end_month) - parseInt(formData.start_month)),  // This calculates duration in months
+        duration_years: parseInt(formData.end_year) - parseInt(formData.start_year),
+        project_duration:
+          (parseInt(formData.end_year) - parseInt(formData.start_year)) * 12 +
+          (parseInt(formData.end_month) - parseInt(formData.start_month)),
         start_year: parseInt(formData.start_year),
         start_month: parseInt(formData.start_month),
         end_year: parseInt(formData.end_year),
         end_month: parseInt(formData.end_month),
-        
-        // Add the missing fields (projects, employees, weeks) here
-        projects: "example_project_data",  // Replace with actual logic or input
-        employees: "example_employee_data", // Replace with actual logic or input
-        weeks: "example_weeks_data"         // Replace with actual logic or input
       };
-      console.log("the payload", payload);
-      const response = await axios.post('http://127.0.0.1:5001/predict', payload);
+  
+      const response = await axios.post("http://127.0.0.1:5001/predict", payload);
       const predictionData = response.data;
-
       setPrediction(predictionData);
-      console.log('Prediction Data:', predictionData);
-
-
-      // Static test data
-const predictionData2 = {
-  automation_specialist: 2,
-  drilling_engineer: 1,
-  geologist: 3,
-  mechanical_engineer: 4,
-  mud_engineer: 2,
-  operations_engineer: 5,
-  rig_manager: 1,
-  water_engineer: 2
-};
-
-      // 🎯 Prepare the correct input for the scheduler
-      const schedulerInput = {
-        projects: [
-          {
-            name: "Oil Rig Operation",
-            start: 0,
-            end: 15,  // Based on the provided test data (15 months, so 15 weeks)
-            roles: {
-              automation_specialist: 0,
-              drilling_engineer: 10,
-              geologist: 2,
-              mechanical_engineer: 5,
-              mud_engineer: 4,
-              operations_engineer: 9,
-              rig_manager: 2,
-              water_engineer: 1
-            }
-          }
-        ],
-        employees: generateEmployees(predictionData),  // Use the function to generate employees
-        weeks: 16,  // Based on project duration in weeks
-        shift_system: "4x4"  // Shift system from test data
+  
+      const newProject = {
+        name: `Project ${String.fromCharCode(65 + projects.length)}`, // A, B, C...
+        start: 0,
+        end: Number(formData.end_month * 4 - 1),
+        roles: {
+          "Automation Specialist": predictionData.automation_specialist,
+          "Drilling Engineer": predictionData.drilling_engineer,
+          "Geologist": predictionData.geologist,
+          "Mechanical Engineer": predictionData.mechanical_engineer,
+          "Mud Engineer": predictionData.mud_engineer,
+          "Operations Engineer": predictionData.operations_engineer,
+          "Rig Manager": predictionData.rig_manager,
+          "Water Engineer": predictionData.water_engineer,
+        },
       };
-      
-
-console.log('Scheduler Input:', schedulerInput);
-// Now run the scheduler with correct input
-await runScheduler(schedulerInput);
+  
+      setProjects(prev => [...prev, newProject]);
+  
+      console.log("✅ Project added:", newProject);
     } catch (error) {
-      console.error('Prediction Error:', error);
+      console.error("Prediction Error:", error);
     } finally {
       setIsLoading(false);
     }
-
-    //setTimeout(() => {
-     // navigate('/settings'); // Replace with your actual route
-   // }, 10000);
   };
+  
+  
 
 
   return (
@@ -190,6 +189,20 @@ await runScheduler(schedulerInput);
           <Dropdown label="Water Treatment" options={yesNo} value={formData.water_treatment} onChange={(v) => handleListboxChange("water_treatment", v)} />
           <Dropdown label="Shift Type" options={shiftTypes} value={formData.shift_type} onChange={(v) => handleListboxChange("shift_type", v)} />
         </div>
+
+        <div className="fixed bottom-8 right-8 z-50">
+  <motion.button
+    whileHover={{ scale: 1.1 }}
+    whileTap={{ scale: 0.95 }}
+    disabled={isLoading}
+    onClick={Add_Project}
+    className={`bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-6 rounded-full shadow-lg transition-all duration-300 text-lg ${
+      isLoading ? 'opacity-50 cursor-not-allowed' : ''
+    }`}
+  >
+    {isLoading ? 'Processing...' : '➕ Add Project'}
+  </motion.button>
+</div>
 
         <div className="text-center mt-12">
           <motion.button type="submit" whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }} disabled={isLoading} className={`bg-gradient-to-r from-orange-400 to-orange-600 text-white font-bold py-4 px-10 rounded-full shadow-md hover:shadow-lg transition text-xl ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}>
