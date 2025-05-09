@@ -1,155 +1,173 @@
-import React, { useState } from "react";
-import { TextField, Button } from "@mui/material";
-import { useNavigate } from 'react-router-dom';
-import Calendar from "react-calendar";
+import React, { useState } from 'react';
 
-const SearchProjects = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [projects, setProjects] = useState([]);
-  
-  // Sample data
-  const projectData = [
-    { name_id: "p1", name: "Project One", description: "Description of Project One" },
-    { name_id: "p2", name: "Project Two", description: "Description of Project Two" },
-    { name_id: "p3", name: "Project Three", description: "Description of Project Three" },
-    // Add more sample projects as needed
+const Inbox = () => {
+  const messages = [
+    { id: 1, sender: 'John Doe', subject: 'Meeting Reminder', content: 'Don’t forget our meeting tomorrow at 10 AM.' },
+    { id: 2, sender: 'Jane Smith', subject: 'Project Update', content: 'The project is on track and will be completed by next week.' },
+    { id: 3, sender: 'Mark Lee', subject: 'Lunch Invitation', content: 'Would you like to grab lunch tomorrow?' },
   ];
 
-  // Function to handle search
-  const handleSearch = () => {
-    if (searchQuery) {
-      const filteredProjects = projectData.filter(project =>
-        project.name_id.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setProjects(filteredProjects);
-    } else {
-      setProjects([]);
+  const [pendingMessages, setPendingMessages] = useState([]);
+  const [selectedEmail, setSelectedEmail] = useState('');
+  const [messageContent, setMessageContent] = useState('');
+  const [openedMessage, setOpenedMessage] = useState(null);
+
+  const handleSendMessage = () => {
+    if (selectedEmail && messageContent) {
+      const newMessage = {
+        id: Date.now(),
+        recipient: selectedEmail,
+        content: messageContent,
+      };
+      setPendingMessages([...pendingMessages, newMessage]);
+      setSelectedEmail('');
+      setMessageContent('');
     }
   };
-  
 
-  return (
-    <section className="bg-white font-futura pb-10 pt-20 dark:bg-dark lg:pb-20 lg:pt-[120px]">
-      <div className="container  px-4">
-        <div className="text-center max-w-2xl ">
-          <h2 className="text-4xl sm:text-5xl font-bold text-primary mb-4">
-             Search Projects 
-          </h2>
-           {/* Second Section - Search Bar */}
-        <div className="flex justify-center mb-10">
-          <TextField
-            label="Search by Project ID"
-            variant="outlined"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: "100%", maxWidth: "500px", marginRight: "10px", border : "2px dashed" }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSearch}
-            sx={{ height: "50px" }}
-          >
-            Search
-          </Button>
-        </div>
-
-
-           
-           
-        </div>
-        
-        <h2 className="text-xl sm:text-5xl font-bold text-primary mt-10 ">
-             Projects Searched
-          </h2>
-        <Table/>
-        
-      </div>
-    </section>
-  );
-};
-
-export default SearchProjects;
-
-
-
-
-
-
-
-
-
-const TdStyle = {
-  ThStyle: `w-1/6 min-w-[160px] border-l  text-black border-transparent py-4 px-3 text-lg font-medium  lg:py-7 lg:px-4`,
-  TdStyle: `text-dark border-b border-l border-[#E8E8E8] bg-[#F3F6FF] dark:bg-dark-3 dark:border-dark dark:text-dark-7 py-5 px-2 text-center text-base font-medium`,
-  TdStyle2: `text-dark border-b border-[#E8E8E8] bg-white dark:border-dark dark:bg-dark-2 dark:text-dark-7 py-5 px-2 text-center text-base font-medium`,
-  TdButton: `inline-block px-6 py-2.5 border rounded-md border-primary text-primary hover:bg-primary hover:text-white font-medium`,
-}
-const Table = () => {
-  const navigate = useNavigate();
-
-  const handleGoToProjectDetails = () => {
-    navigate('/settings');
+  const handleRemovePendingMessage = (id) => {
+    setPendingMessages(pendingMessages.filter((msg) => msg.id !== id));
   };
-  return (
-    <section className="bg-white dark:bg-dark py-20 lg:py-[120px]">
-      <div className="container">
-        <div className="flex flex-wrap -mx-4">
-          <div className="w-full">
-            <div className="max-w-full overflow-x-auto">
-              <table className="w-full table-auto">
-                <thead className="text-center bg-primary">
-                  <tr>
-                    <th className={TdStyle.ThStyle}>Project Id</th>
-                    <th className={TdStyle.ThStyle}>Project Name</th>
-                    <th className={TdStyle.ThStyle}>Start date </th>
-                    <th className={TdStyle.ThStyle}>End date</th>
-                    <th className={TdStyle.ThStyle}>Complexity</th>
-                  </tr>
-                </thead>
 
-                <tbody>
-                  <tr onClick={handleGoToProjectDetails} className="cursor-pointer">
-                    <td className={TdStyle.TdStyle}>01</td>
-                    <td className={TdStyle.TdStyle2}>learum pselum</td>
-                    <td className={TdStyle.TdStyle}>2025-04-01</td>
-                    <td className={TdStyle.TdStyle2}>2025-06-30</td>
-                    <td className={TdStyle.TdStyle}>S</td>
-                  </tr>
-                  <tr>
-                  <td className={TdStyle.TdStyle}>01</td>
-                    <td className={TdStyle.TdStyle2}>learum pselum</td>
-                    <td className={TdStyle.TdStyle}>2025-04-01</td>
-                    <td className={TdStyle.TdStyle2}>2025-06-30</td>
-                    <td className={TdStyle.TdStyle}>S</td>
-                  </tr>
-                  <tr>
-                  <td className={TdStyle.TdStyle}>01</td>
-                    <td className={TdStyle.TdStyle2}>learum pselum</td>
-                    <td className={TdStyle.TdStyle}>2025-04-01</td>
-                    <td className={TdStyle.TdStyle2}>2025-06-30</td>
-                    <td className={TdStyle.TdStyle}>S</td>
-                  </tr>
-                  <tr>
-                  <td className={TdStyle.TdStyle}>01</td>
-                    <td className={TdStyle.TdStyle2}>learum pselum</td>
-                    <td className={TdStyle.TdStyle}>2025-04-01</td>
-                    <td className={TdStyle.TdStyle2}>2025-06-30</td>
-                    <td className={TdStyle.TdStyle}>S</td>
-                  </tr>
-                  <tr>
-                  <td className={TdStyle.TdStyle}>01</td>
-                    <td className={TdStyle.TdStyle2}>learum pselum</td>
-                    <td className={TdStyle.TdStyle}>2025-04-01</td>
-                    <td className={TdStyle.TdStyle2}>2025-06-30</td>
-                    <td className={TdStyle.TdStyle}>S</td>
-                    </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+  const sectionStyle = {
+    maxWidth: '700px',
+    margin: '20px auto',
+    backgroundColor: '#FFF9F2',
+    borderRadius: '8px',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+    padding: '20px',
+  };
+
+  const inputStyle = {
+    width: '100%',
+    padding: '10px',
+    borderRadius: '5px',
+    border: '1px solid #FFCCBC',
+    marginBottom: '15px',
+    fontSize: '1rem',
+  };
+
+  const headingStyle = {
+    color: '#FF7F00',
+    marginBottom: '20px',
+    textAlign: 'center',
+  };
+
+  return (
+    <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: '#FFFBF5', minHeight: '100vh', padding: '30px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <h1 style={{ color: '#FF9800', fontSize: '2.5rem' }}>Employee Inbox</h1>
+        <p style={{ color: '#FF5722', fontSize: '1.1rem' }}>View and manage your internal communications</p>
       </div>
-    </section>
+
+      {/* Incoming Messages */}
+      <div style={sectionStyle}>
+        <h2 style={headingStyle}>Incoming Messages</h2>
+        {messages.map((msg) => (
+          <div
+            key={msg.id}
+            onClick={() => setOpenedMessage(msg)}
+            style={{ borderBottom: '1px solid #FFE0B2', paddingBottom: '10px', marginBottom: '15px', cursor: 'pointer' }}
+          >
+            <h3 style={{ color: '#FF5722', marginBottom: '5px' }}>{msg.subject}</h3>
+            <p style={{ margin: 0, color: '#333' }}><strong>From:</strong> {msg.sender}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Opened Message */}
+      {openedMessage && (
+        <div style={sectionStyle}>
+          <h2 style={headingStyle}>Opened Message</h2>
+          <h3 style={{ color: '#FF5722', marginBottom: '5px' }}>{openedMessage.subject}</h3>
+          <p style={{ margin: 0, color: '#333' }}><strong>From:</strong> {openedMessage.sender}</p>
+          <p style={{ margin: '10px 0', color: '#555' }}>{openedMessage.content}</p>
+          <button
+            onClick={() => setOpenedMessage(null)}
+            style={{
+              backgroundColor: '#FF9800',
+              color: '#fff',
+              padding: '10px 20px',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontSize: '1rem',
+            }}
+            aria-label="Close opened message"
+          >
+            Close
+          </button>
+        </div>
+      )}
+
+      {/* Send Message */}
+      <div style={sectionStyle}>
+        <h2 style={headingStyle}>Send a Message</h2>
+        <label style={{ color: '#555', fontWeight: 'bold' }}>Recipient Email:</label>
+        <input
+          type="email"
+          value={selectedEmail}
+          onChange={(e) => setSelectedEmail(e.target.value)}
+          placeholder="employee@example.com"
+          style={inputStyle}
+        />
+        <label style={{ color: '#555', fontWeight: 'bold' }}>Message Content:</label>
+        <textarea
+          value={messageContent}
+          onChange={(e) => setMessageContent(e.target.value)}
+          placeholder="Write your message here..."
+          rows={5}
+          style={inputStyle}
+        />
+        <button
+          onClick={handleSendMessage}
+          style={{
+            backgroundColor: '#FF9800',
+            color: '#fff',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '1rem',
+            width: '100%',
+          }}
+          aria-label="Send message"
+        >
+          Send Message
+        </button>
+      </div>
+
+      {/* Pending Messages */}
+      <div style={sectionStyle}>
+        <h2 style={headingStyle}>Pending Messages</h2>
+        {pendingMessages.length > 0 ? (
+          pendingMessages.map((msg) => (
+            <div key={msg.id} style={{ borderBottom: '1px solid #FFE0B2', paddingBottom: '10px', marginBottom: '15px' }}>
+              <p style={{ margin: 0, color: '#333' }}><strong>To:</strong> {msg.recipient}</p>
+              <p style={{ margin: '5px 0', color: '#555' }}>{msg.content}</p>
+              <button
+                onClick={() => handleRemovePendingMessage(msg.id)}
+                style={{
+                  backgroundColor: '#FF7043',
+                  color: '#fff',
+                  padding: '6px 12px',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                }}
+                aria-label={`Delete message to ${msg.recipient}`}
+              >
+                Delete
+              </button>
+            </div>
+          ))
+        ) : (
+          <p style={{ color: '#888', textAlign: 'center' }}>No pending messages.</p>
+        )}
+      </div>
+    </div>
   );
 };
+
+export default Inbox;

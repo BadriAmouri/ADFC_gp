@@ -8,7 +8,7 @@ const Sidebar = ({ window, sideBarWidth, mobileOpen, handleDrawerToggle }) => {
   const drawer = (
     <div>
       <Toolbar>
-        <img src="/ADFCLogo.png" alt="Logo" width="200" />
+        <img src="/ADFCLogo.png" alt="Logo" width="400" />
         
       </Toolbar>
       <Divider />

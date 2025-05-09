@@ -21,12 +21,12 @@ const SidebarItem = ({ name, icon, url }) => {
       >
         <ListItemIcon sx={{ color: "sidebar.textColor" }}>{icon}</ListItemIcon>
         <p 
-  className=" text-orange-400"
+  className=" text-orange-600"
   style={{
   marginLeft: "-10px",
   fontFamily: "Futura",
   fontSize: "1rem", // or adjust as needed
-  lineHeight: "1.5"
+  lineHeight: "5"
 }}>
   {name}
 </p>
