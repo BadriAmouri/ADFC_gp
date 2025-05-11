@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from scheduler.project_scheduler import ProjectScheduler
+import os
 
 app = Flask(__name__)
 scheduler = ProjectScheduler()
@@ -18,11 +19,33 @@ def solve_schedule():
 
     status, assignments, exec_time = scheduler.solve_csp(projects, employees, weeks, shift_system)
 
-    return jsonify({
-        'status': status,
-        'execution_time': exec_time,
-        'assignments': assignments
-    })
+    # Generate the visualization as an image
+    fig = scheduler.visualize_schedule(assignments, employees, projects, weeks)
+
+    if fig:
+        # Define the file path where the image will be saved
+        output_path = os.path.join('static', 'schedule_image.png')
+        
+        # Save the image to the directory
+        fig.savefig(output_path, format='png')
+
+        return jsonify({
+            'status': status,
+            'execution_time': exec_time,
+            'assignments': assignments,
+            'image_url': f'/static/schedule_image.png'  # Returning the URL of the saved image
+        })
+    else:
+        return jsonify({
+            'status': status,
+            'execution_time': exec_time,
+            'assignments': assignments,
+            'image_url': None  # No image generated
+        })
 
 if __name__ == '__main__':
+    # Ensure the static directory exists
+    if not os.path.exists('static'):
+        os.makedirs('static')
+    
     app.run(debug=True)

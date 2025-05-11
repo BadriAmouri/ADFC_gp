@@ -227,7 +227,7 @@ Content-Type: application/json
 
 
 ### Final Test 3
-POST http://localhost:5001/solve
+POST http://localhost:5000/solve
 Content-Type: application/json
 
 {
@@ -390,4 +390,89 @@ Content-Type: application/json
   ],
   "weeks": 16,
   "shift_system": "4x4"
+}
+
+
+### test App.py
+POST http://localhost:5000/solve
+Content-Type: application/json
+
+{
+  "projects": [
+    {
+      "name": "Project A",
+      "start": 0,
+      "end": 3,
+      "roles": {
+        "developer": 2,
+        "designer": 1
+      }
+    },
+    {
+      "name": "Project B",
+      "start": 2,
+      "end": 5,
+      "roles": {
+        "developer": 1
+      }
+    }
+  ],
+  "employees": [
+    {
+      "name": "Employee 1",
+      "role": "developer",
+      "expertise": 10,
+      "availability": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    },
+    {
+      "name": "Employee 2",
+      "role": "designer",
+      "expertise": 8,
+      "availability": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    }
+  ],
+  "weeks": 6,
+  "shift_system": "3x3"
+}
+
+### test App.py second time
+POST http://127.0.0.1:5000/solve
+Content-Type: application/json
+
+{
+    "projects": [
+        {
+            "name": "Project A",
+            "start": 0,
+            "end": 4,
+            "roles": {
+                "developer": 2,
+                "manager": 1
+            }
+        },
+        {
+            "name": "Project B",
+            "start": 2,
+            "end": 5,
+            "roles": {
+                "developer": 3
+            }
+        }
+    ],
+    "employees": [
+        {
+            "name": "John Doe",
+            "role": "developer",
+            "expertise": 5,
+            "availability": [1, 1, 1, 0, 1, 1, 1]
+        },
+        {
+            "name": "Jane Doe",
+            "role": "manager",
+            "expertise": 7,
+            "availability": [1, 1, 1, 1, 0, 0, 0]
+        }
+    ],
+    "weeks": 6,
+    "shift_system": "3x3"
 }

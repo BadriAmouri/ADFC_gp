@@ -3,6 +3,8 @@ from ortools.sat.python import cp_model
 import time
 import pandas as pd
 import matplotlib.pyplot as plt
+import io
+import base64
 
 class ProjectScheduler:
     def __init__(self):
@@ -174,32 +176,16 @@ class ProjectScheduler:
         if not assignments:
             print("No assignments to visualize.")
             return None
-        
-        # Create a DataFrame from assignments
         df = pd.DataFrame(assignments)
-        
-        # Initialize the figure and axes
         fig, ax = plt.subplots(figsize=(15, 10))
-        
-        # List unique employees sorted
         unique_employees = sorted(df['employee'].unique())
         ax.set_yticks(range(len(unique_employees)))
         ax.set_yticklabels(unique_employees)
-        
-        # Set x-axis range to cover all weeks
         ax.set_xlim(0, weeks)
-        ax.set_xlabel("Weeks")
-        ax.set_title("Project Schedule")
-        
-        # Grid lines for better visibility
         ax.grid(True)
-
-        # Loop over each employee and create a horizontal bar chart for their assignments
         for emp in unique_employees:
             emp_data = df[df['employee'] == emp]
             idx = unique_employees.index(emp)
-
-            # Group by project and team
             for (proj, team), group in emp_data.groupby(['project', 'team']):
                 weeks_sorted = sorted(group['week'])
                 blocks = []
@@ -212,28 +198,14 @@ class ProjectScheduler:
                             start = w
                         prev = w
                     blocks.append((start, prev))
-
-                # Get color for project
                 color = self._get_project_color(proj)
-                
-                # Choose pattern based on team
                 pattern = "//" if team == "B" else "\\\\"
-                
-                # Plot each block of weeks with a bar
                 for s, e in blocks:
                     ax.barh(idx, e - s + 1, left=s, color=color, edgecolor="black", hatch=pattern)
-                    
-                    # Add project name and team info at the center of the block
-                    ax.text(s + (e - s + 1)/2, idx, f"{proj} (Team {team})", ha="center", va="center", fontsize=8, color="white")
-                    
-        # Return the plot figure
+                    if blocks[0] == (s, e):
+                        ax.text(s + (e - s + 1)/2, idx, f"{proj} (Team {team})", ha="center", va="center", fontsize=8)
         return fig
 
     def _get_project_color(self, project_name):
-        color_map = {
-            "Project 1": "lightblue",
-            "Project 2": "lightgreen",
-            "Project 3": "lightcoral",
-            # Add more projects and their colors as needed
-        }
-        return color_map.get(project_name, "gray")  # Default color if no match
+        colors = plt.cm.tab10.colors
+        return colors[hash(project_name) % len(colors)]
