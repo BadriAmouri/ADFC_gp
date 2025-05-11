@@ -5,6 +5,7 @@ import Sidebar from "./components/common/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import Navbar from "./components/common/Navbar";
 import Home from "./Client/page";
+import { WorkerProvider } from "./Worker/WorkerContext";
 
 import {
   AddProduct,
@@ -15,7 +16,6 @@ import {
   SingleProduct,
 } from "./pages";
 
-
 import UserProfilePage from "./pages/User_Page";
 import ProjectForm from "./pages/Customers";
 import ProjectDetails from "./pages/Settings";
@@ -24,8 +24,11 @@ import ProjectInfo from "./Client/project/page";
 import About from "./Client/about/page";
 import Contact from "./Client/contact/page";
 import AuthForm from "./Client/Signin/page";
+import Profile from "./Worker/Profile";
+import WorkerProjectDetails from "./Worker/ProjectWorker";
+import WorkerInbox from "./Worker/WorkerInbox";
 
-const sideBarWidth = 250; // Sidebar width (can be made dynamic)
+const sideBarWidth = 250;
 
 function App() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -35,58 +38,69 @@ function App() {
     setMobileOpen(!mobileOpen);
   };
 
-  // Hide Sidebar (and Navbar if needed) on specific routes
-  const hideNavAndSidebar =
-    location.pathname === "/" ||
-    location.pathname === "/sign" ||
-    location.pathname === "/user_view" ||
-    location.pathname === "/Client/project" ||
-    location.pathname === "/Client/About" || 
-    location.pathname === "/Client/Contact" || 
-    location.pathname === "/Client/AuthForm";
+  const HIDDEN_PATHS = [
+    "/",
+    "/sign",
+    "/user_view",
+    "/Client/project",
+    "/Client/About",
+    "/Client/Contact",
+    "/Client/AuthForm",
+  ];
+
+  const hideNavAndSidebar = HIDDEN_PATHS.some(path =>
+    location.pathname === path
+  );
+  
 
   return (
-    <Box sx={{ display: "flex" }}>
-      {!hideNavAndSidebar && (
-        <Sidebar
-          sideBarWidth={sideBarWidth}
-          mobileOpen={mobileOpen}
-          handleDrawerToggle={handleDrawerToggle}
-        />
-      )}
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          px: { xs: 1, md: 2 },
-          width: {
-            xs: "100%",
-            md: hideNavAndSidebar ? "100%" : `calc(100% - ${sideBarWidth}px)`,
-          },
-        }}
-      >
-        <Routes>
-          {/* Redirect "/" to "/sign" */}
-          <Route path="/" element={<Home to="/sign" />} />
-          <Route path="/sign" element={<Home />} />
-          <Route path="Client/AuthForm" element={<AuthForm/>} />
-          <Route path="/Client/About" element={<About/>} />
-          <Route path="/Client/Contact" element={<Contact/>} />
-          <Route path="/Client/project" element={<ProjectInfo/>} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/products/add" element={<AddProduct />} />
-          <Route path="/products/:id" element={<SingleProduct />} />
-          <Route path="/customers" element={<ProjectForm />} />
-          <Route path="/customers/:id" element={<SingleCustomer />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/orders/:id" element={<SingleOrder />} />
-          <Route path="/settings" element={<ProjectDetails />} />
-          <Route path="/inbox" element={<SearchProjects />} />
-          <Route path="/user_view" element={<UserProfilePage />} />
-        </Routes>
+    <WorkerProvider>
+      <Box sx={{ display: "flex" }}>
+        {!hideNavAndSidebar && (
+          <Sidebar
+            sideBarWidth={sideBarWidth}
+            mobileOpen={mobileOpen}
+            handleDrawerToggle={handleDrawerToggle}
+          />
+        )}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            px: { xs: 1, md: 2 },
+            width: {
+              xs: "100%",
+              md: hideNavAndSidebar
+                ? "100%"
+                : `calc(100% - ${sideBarWidth}px)`,
+            },
+          }}
+        >
+          <Routes>
+            <Route path="/" element={<Home to="/sign" />} />
+            <Route path="/sign" element={<Home />} />
+            <Route path="/Client/AuthForm" element={<AuthForm />} />
+            <Route path="/Client/About" element={<About />} />
+            <Route path="/Client/Contact" element={<Contact />} />
+            <Route path="/Client/project" element={<ProjectInfo />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/products/add" element={<AddProduct />} />
+            <Route path="/products/:id" element={<SingleProduct />} />
+            <Route path="/customers" element={<ProjectForm />} />
+            <Route path="/customers/:id" element={<SingleCustomer />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/orders/:id" element={<SingleOrder />} />
+            <Route path="/settings" element={<ProjectDetails />} />
+            <Route path="/inbox" element={<SearchProjects />} />
+            <Route path="/user_view" element={<UserProfilePage />} />
+            <Route path="/worker/Profile" element={<Profile />} />
+            <Route path="/worker/ProjectDetails" element={< WorkerProjectDetails/>} />
+            <Route path="/worker/inbox" element={<WorkerInbox/>} />
+          </Routes>
+        </Box>
       </Box>
-    </Box>
+    </WorkerProvider>
   );
 }
 

@@ -1,11 +1,38 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ADFCLogo from '../Client/assets/ADFC_Logo_Full_-_AR_-_White_BG-removebg-preview.png'; // Ensure this path is correct
 import { Link } from 'react-router-dom';
-import HomeBackground from '../Client/assets/Bladi.jpg'
+import HomeBackground from '../Client/assets/Bladi.jpg';
+import { useNavigate } from 'react-router-dom';
+import { useWorker } from "../Worker/WorkerContext";
+
+
 export default function Home() {
   const [showNext, setShowNext] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [workspace, setWorkspace] = useState('');
+  const navigate = useNavigate();
+  const { setWorkerWorkspace } = useWorker();
+  
+
+  // Timer to show popup after 4 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleWorkspaceSubmit = (e) => {
+    e.preventDefault();
+    // Handle workspace submission here
+    console.log('Workspace entered:', workspace);
+    setWorkerWorkspace(1);
+    navigate('/Worker/Profile');
+    
+  };
 
   const nextProjectInfo = {
     developers: ['Amieur Lilya Fatima-Zohra', 'Yasmine Senour', 'Afnane Karraoui', 'Feddag Amel', 'Badri Amouri'],
@@ -101,6 +128,43 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Worker Popup */}
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-lg p-6 shadow-xl max-w-md w-full">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Worker Verification</h2>
+            <p className="mb-4 text-gray-600">Are you a worker? Please enter your workspace:</p>
+            
+            <form onSubmit={handleWorkspaceSubmit}>
+              <input
+                type="password"
+                value={workspace}
+                onChange={(e) => setWorkspace(e.target.value)}
+                placeholder="Enter your Password"
+                className="w-full p-2 border border-gray-300 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                required
+              />
+              
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowPopup(false)}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

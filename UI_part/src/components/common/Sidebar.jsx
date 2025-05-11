@@ -3,8 +3,14 @@ import React from "react";
 import { links } from "../../data/links";
 import SidebarItem from "./SidebarItem";
 import SidebarItemCollapse from "./SidebarItemCollapse";
+import { useWorker } from "../../Worker/WorkerContext";
+import { getLinks } from "../../data/links";
+
 
 const Sidebar = ({ window, sideBarWidth, mobileOpen, handleDrawerToggle }) => {
+  const { isWorkerWorkspace } = useWorker(); // Get the current worker workspace value
+  const links = getLinks(isWorkerWorkspace); // Get links dynamically
+
   const drawer = (
     <div>
       <Toolbar>

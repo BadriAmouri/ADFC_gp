@@ -10,56 +10,28 @@ import {
   FiShoppingCart,
   FiUsers,
 } from "react-icons/fi";
+import { useWorker } from "../Worker/WorkerContext";
 
-export const links = [
+export const getLinks = (isWorkerWorkspace) => [
   {
-    name: "Dashboard",
+    name: isWorkerWorkspace ? "Worker Profile" : "Dashboard",
     icon: <FiHome />,
-    url: "/dashboard",
+    url: isWorkerWorkspace ? "/worker/Profile" : "/dashboard",
   },
- // {
-   // name: "Products",
-   // icon: <FiShoppingBag />,
-   // subLinks: [
-   //   {
-      //  name: "All Products",
-     //   url: "/products",
-    //  },
-    //  {
-     //   name: "Add Product",
-     //   url: "/products/add",
-    //  },
-      
-   // ],
- // },
-  
   {
-    name: "Generate Project",
+    name: !isWorkerWorkspace ? "Generate Project" : "My Projects",
     icon: <FiUsers />,
-    url: "/customers",
+    url: !isWorkerWorkspace ?"/customers" : "/worker/ProjectDetails",
   },
-
- // {
-  //  name: "Orders",
-   // icon: <FiShoppingCart />,
-   // subLinks: [
-   //   {
-    //    name: "All Orders",
-    //    url: "/orders",
-    //  },
-      
-   // ],
- // },
-  
-  
+ 
   {
-    name: "Project Generated",
-    icon: <FiSettings />,
-    url: "/settings",
- },
+    name: isWorkerWorkspace ? "Inbox" : "Project Generated",
+    icon:  isWorkerWorkspace ?   <FiMail /> : <FiSettings />,
+    url: isWorkerWorkspace ? "/worker/inbox": "/settings",
+  },
   {
-    name: "Projects",
-    icon: <FiMail />,
-    url: "/inbox",
+    name:  isWorkerWorkspace ?  "" : "Projects",
+    icon: isWorkerWorkspace ? "" : <FiMail />,
+    url: isWorkerWorkspace ? "" : "/inbox",
   },
 ];
